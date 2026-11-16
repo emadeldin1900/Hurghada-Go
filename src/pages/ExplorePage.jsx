@@ -65,14 +65,14 @@ export default function ExplorePage() {
   };
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto space-y-8">
+    <div className="w-full min-h-screen py-6 sm:py-10 px-3.5 sm:px-8 lg:px-16 max-w-7xl mx-auto space-y-6 sm:space-y-8">
       
       {/* Page Header */}
-      <div className="space-y-3">
-        <h1 className="text-3xl sm:text-5xl font-extrabold text-[#032733] tracking-tight">
+      <div className="space-y-2 sm:space-y-3">
+        <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-[#032733] tracking-tight">
           {lang === 'ar' ? 'استكشف معالم وتجارب الغردقة' : 'Explore Hurghada & Red Sea'}
         </h1>
-        <p className="text-[#5d737a] text-base sm:text-lg">
+        <p className="text-[#5d737a] text-xs sm:text-base lg:text-lg">
           {lang === 'ar'
             ? 'تصفح أفضل الفنادق، ومواقع الغوص العالمية، والمطاعم والأنشطة المختارة بعناية.'
             : 'Browse verified hotels, premier dive reefs, authentic dining, and desert adventures.'}
@@ -80,28 +80,28 @@ export default function ExplorePage() {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+      <div className="bg-white p-3 sm:p-4 rounded-2xl sm:rounded-3xl border border-slate-200/80 shadow-xs space-y-3 sm:space-y-4">
         
         {/* Search Input */}
         <form onSubmit={handleSearchSubmit} className="relative flex items-center">
-          <Search className="w-5 h-5 text-slate-400 absolute start-4" />
+          <Search className="w-4 h-4 sm:w-5 sm:h-5 text-slate-400 absolute start-3.5 sm:start-4" />
           <input
             type="text"
             value={localQuery}
             onChange={(e) => setLocalQuery(e.target.value)}
             placeholder={lang === 'ar' ? 'ابحث بالاسم أو المكان أو النشاط...' : 'Search by name, vibe, or keyword...'}
-            className="w-full bg-[#FAF8F5] text-[#032733] text-sm rounded-2xl py-3.5 ps-12 pe-28 focus:outline-none focus:ring-2 focus:ring-[#f0644b]/30 font-medium"
+            className="w-full bg-[#FAF8F5] text-[#032733] text-xs sm:text-sm rounded-xl sm:rounded-2xl py-3 ps-10 pe-24 sm:py-3.5 sm:ps-12 sm:pe-28 focus:outline-none focus:ring-2 focus:ring-[#f0644b]/30 font-medium"
           />
           <button
             type="submit"
-            className="absolute end-2 px-5 py-2 bg-[#032733] hover:bg-[#f0644b] text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+            className="absolute end-1.5 sm:end-2 px-3.5 py-1.5 sm:px-5 sm:py-2 bg-[#032733] hover:bg-[#f0644b] text-white text-xs font-bold rounded-lg sm:rounded-xl transition-colors cursor-pointer"
           >
             {lang === 'ar' ? 'بحث' : 'Search'}
           </button>
         </form>
 
         {/* Category Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+        <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-1 scrollbar-none snap-x">
           {categories.map((cat) => {
             const active = activeCategory === cat.id;
             return (
@@ -109,7 +109,7 @@ export default function ExplorePage() {
                 key={cat.id}
                 type="button"
                 onClick={() => handleCategoryChange(cat.id)}
-                className={`px-4 py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer snap-start ${
                   active 
                     ? 'bg-[#032733] text-white shadow-xs' 
                     : 'bg-[#f5efe5] text-[#07384a] hover:bg-slate-200/80'
@@ -177,16 +177,16 @@ export default function ExplorePage() {
           </button>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-8">
           {filteredPlaces.map((place) => {
             const favorited = isFavorite(place.id);
             return (
               <div
                 key={place.id}
-                className="bg-white rounded-3xl overflow-hidden shadow-xs border border-slate-200/70 flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+                className="bg-white rounded-2xl sm:rounded-3xl overflow-hidden shadow-xs border border-slate-200/70 flex flex-col group hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
               >
                 {/* Media */}
-                <div className="relative h-64 overflow-hidden">
+                <div className="relative h-48 sm:h-64 overflow-hidden">
                   <img
                     src={place.image}
                     alt={place.name}
@@ -195,18 +195,18 @@ export default function ExplorePage() {
                   <button
                     type="button"
                     onClick={() => toggleFavorite(place.id)}
-                    className={`absolute top-4 right-4 w-10 h-10 rounded-full flex items-center justify-center transition-transform active:scale-90 cursor-pointer shadow-md ${
+                    className={`absolute top-3.5 right-3.5 sm:top-4 sm:right-4 w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-transform active:scale-90 cursor-pointer shadow-md ${
                       favorited 
                         ? 'bg-[#f0644b] text-white' 
                         : 'bg-white/90 text-slate-700 hover:text-[#f0644b]'
                     }`}
                   >
-                    <Heart className={`w-5 h-5 ${favorited ? 'fill-white' : ''}`} />
+                    <Heart className={`w-4 h-4 sm:w-5 sm:h-5 ${favorited ? 'fill-white' : ''}`} />
                   </button>
                 </div>
 
                 {/* Details */}
-                <div className="p-6 flex flex-col flex-1 justify-between gap-4">
+                <div className="p-4 sm:p-6 flex flex-col flex-1 justify-between gap-3 sm:gap-4">
                   <div className="space-y-3">
                     <div className="flex items-center justify-between gap-2">
                       <span className="bg-[#ddf4f1] text-[#07384a] text-xs font-bold px-3 py-1 rounded-full">

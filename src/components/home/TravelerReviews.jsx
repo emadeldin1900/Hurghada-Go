@@ -6,25 +6,25 @@ export default function TravelerReviews() {
   const { lang, t } = useLanguage();
 
   return (
-    <section className="bg-[#FAF8F5] py-20 px-4 sm:px-8 lg:px-16 border-b border-slate-200/60">
-      <div className="max-w-7xl mx-auto space-y-12">
+    <section className="bg-[#FAF8F5] py-10 sm:py-16 lg:py-20 px-3.5 sm:px-8 lg:px-16 border-b border-slate-200/60">
+      <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12">
         
         {/* Header */}
-        <div className="space-y-2 text-center max-w-2xl mx-auto">
-          <span className="text-[#f0644b] font-extrabold text-xs sm:text-sm tracking-wider uppercase">
+        <div className="space-y-1.5 sm:space-y-2 text-center max-w-2xl mx-auto">
+          <span className="text-[#f0644b] font-extrabold text-[11px] sm:text-sm tracking-wider uppercase">
             {t('reviewsEyebrow')}
           </span>
-          <h2 className="text-[#032733] text-3xl sm:text-4xl font-extrabold tracking-tight">
+          <h2 className="text-[#032733] text-2xl sm:text-4xl font-extrabold tracking-tight">
             {t('reviewsTitle')}
           </h2>
         </div>
 
         {/* Reviews Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-8">
           {TRAVELER_REVIEWS.map((rev) => (
             <div
               key={rev.id}
-              className="bg-white rounded-3xl p-6 sm:p-8 shadow-xs border border-slate-100 flex flex-col justify-between space-y-5 hover:shadow-md transition-shadow"
+              className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-8 shadow-xs border border-slate-100 flex flex-col justify-between space-y-4 sm:space-y-5 hover:shadow-md transition-shadow"
             >
               <div className="space-y-4">
                 {/* Rating & Quote Icon */}

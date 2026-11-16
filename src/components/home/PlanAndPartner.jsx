@@ -16,15 +16,15 @@ export default function PlanAndPartner() {
   };
 
   return (
-    <section className="bg-white py-16 sm:py-20 px-4 sm:px-8 lg:px-16">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+    <section className="bg-white py-10 sm:py-16 lg:py-20 px-3.5 sm:px-8 lg:px-16">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 items-stretch">
         
         {/* Business Owner Promo (Col 1-7) */}
-        <div className="lg:col-span-7 bg-[#032733] rounded-[32px] p-8 sm:p-12 text-white flex flex-col justify-between space-y-8 relative overflow-hidden">
+        <div className="lg:col-span-7 bg-[#032733] rounded-2xl sm:rounded-[32px] p-6 sm:p-12 text-white flex flex-col justify-between space-y-6 sm:space-y-8 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#f0644b]/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="space-y-4 max-w-lg relative z-10">
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-[#ddf4f1] text-xs font-bold border border-white/15">
+          <div className="space-y-3 sm:space-y-4 max-w-lg relative z-10">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 text-[#ddf4f1] text-[11px] sm:text-xs font-bold border border-white/15">
               <Store className="w-3.5 h-3.5 text-[#f0644b]" />
               <span>{t('partnerEyebrow')}</span>
             </div>
@@ -33,7 +33,7 @@ export default function PlanAndPartner() {
               {t('partnerTitle')}
             </h3>
 
-            <p className="text-white/80 text-sm sm:text-base leading-relaxed">
+            <p className="text-white/80 text-xs sm:text-base leading-relaxed">
               {t('partnerSubtitle')}
             </p>
           </div>
@@ -41,7 +41,7 @@ export default function PlanAndPartner() {
           <div className="relative z-10">
             <a
               href="mailto:partners@gohurghada.com"
-              className="inline-flex items-center gap-2 px-6 py-3.5 rounded-full bg-[#f0644b] hover:bg-[#d94a35] text-white font-bold text-sm shadow-md transition-all cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full bg-[#f0644b] hover:bg-[#d94a35] text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
             >
               <span>{t('partnerBtn')}</span>
               <ArrowRight className="w-4 h-4" />
@@ -50,7 +50,7 @@ export default function PlanAndPartner() {
         </div>
 
         {/* Newsletter Signup (Col 8-12) */}
-        <div className="lg:col-span-5 bg-[#FAF8F5] border border-slate-200/80 rounded-[32px] p-8 sm:p-10 flex flex-col justify-between space-y-6">
+        <div className="lg:col-span-5 bg-[#FAF8F5] border border-slate-200/80 rounded-2xl sm:rounded-[32px] p-6 sm:p-10 flex flex-col justify-between space-y-5 sm:space-y-6">
           <div className="space-y-3">
             <div className="w-12 h-12 rounded-2xl bg-[#ddf4f1] text-[#07384a] flex items-center justify-center shadow-2xs">
               <Send className="w-5 h-5 text-[#29b8b2]" />

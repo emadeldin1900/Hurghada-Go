@@ -49,44 +49,44 @@ export default function AiTravelAssistant() {
   const currentPlan = activePlan || HARA_PRESETS[0];
 
   return (
-    <section className="bg-[#ddf4f1] py-20 px-4 sm:px-8 lg:px-16 overflow-hidden">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
+    <section className="bg-[#ddf4f1] py-10 sm:py-16 lg:py-20 px-3.5 sm:px-8 lg:px-16 overflow-hidden">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
         
         {/* Left Column: Assistant Copy & Prompt Chips */}
-        <div className="w-full lg:w-5/12 space-y-6">
+        <div className="w-full lg:w-5/12 space-y-4 sm:space-y-6">
           
           {/* Assistant Label */}
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-[#f0644b] flex items-center justify-center text-white shadow-sm">
-              <Sparkles className="w-5 h-5" />
+          <div className="flex items-center gap-2.5 sm:gap-3">
+            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#f0644b] flex items-center justify-center text-white shadow-sm">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
-            <span className="text-[#d94a35] font-extrabold text-xs sm:text-sm tracking-wider uppercase">
+            <span className="text-[#d94a35] font-extrabold text-[11px] sm:text-sm tracking-wider uppercase">
               {t('aiEyebrow')}
             </span>
           </div>
 
           {/* Headline */}
-          <h2 className="text-[#032733] text-3xl sm:text-5xl font-extrabold tracking-tight leading-[1.08]">
+          <h2 className="text-[#032733] text-2xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight leading-[1.12]">
             {t('aiTitle')}
           </h2>
 
           {/* Subtitle */}
-          <p className="text-[#5d737a] text-base sm:text-lg leading-relaxed">
+          <p className="text-[#5d737a] text-xs sm:text-base lg:text-lg leading-relaxed">
             {t('aiSubtitle')}
           </p>
 
           {/* Suggested Prompts Tags */}
-          <div className="space-y-2 pt-2">
-            <p className="text-xs font-bold text-[#07384a] uppercase tracking-wider">
+          <div className="space-y-2 pt-1 sm:pt-2">
+            <p className="text-[11px] sm:text-xs font-bold text-[#07384a] uppercase tracking-wider">
               {lang === 'ar' ? 'جرّب الضغط على الأفكار الشائعة:' : 'Try popular trip styles:'}
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1.5 sm:gap-2">
               {HARA_PRESETS.map((preset) => (
                 <button
                   key={preset.id}
                   type="button"
                   onClick={() => handleSelectPreset(preset)}
-                  className={`px-3.5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                  className={`px-3 sm:px-3.5 py-1.5 sm:py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${
                     selectedPresetId === preset.id
                       ? 'bg-[#07384a] text-white shadow-sm'
                       : 'bg-white hover:bg-white/80 text-[#07384a] border border-[#07384a]/10'
@@ -99,12 +99,12 @@ export default function AiTravelAssistant() {
           </div>
 
           {/* Assurances */}
-          <div className="flex items-center gap-6 pt-2 text-xs font-semibold text-[#07384a]">
-            <div className="flex items-center gap-2">
+          <div className="flex items-center gap-4 sm:gap-6 pt-1 sm:pt-2 text-xs font-semibold text-[#07384a]">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
               <span>{t('aiAssuranceFree')}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <CheckCircle2 className="w-4 h-4 text-emerald-700" />
               <span>{t('aiAssuranceSave')}</span>
             </div>
@@ -114,7 +114,7 @@ export default function AiTravelAssistant() {
 
         {/* Right Column: Dynamic Itinerary Preview Card */}
         <div className="w-full lg:w-7/12">
-          <div className="bg-white rounded-[32px] p-6 sm:p-8 shadow-[0px_20px_48px_-10px_rgba(3,39,51,0.22)] border border-white/80 space-y-5 transition-all">
+          <div className="bg-white rounded-2xl sm:rounded-[32px] p-4 sm:p-8 shadow-[0px_16px_40px_-10px_rgba(3,39,51,0.2)] border border-white/80 space-y-4 sm:space-y-5 transition-all">
             
             {/* Header: Assistant Identity */}
             <div className="flex items-center justify-between pb-3 border-b border-slate-100">

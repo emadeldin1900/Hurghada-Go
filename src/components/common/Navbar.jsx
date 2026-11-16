@@ -21,19 +21,19 @@ export default function Navbar({ transparent = false }) {
   ];
 
   return (
-    <header className={`w-full transition-colors z-50 ${transparent ? 'absolute top-0 left-0 right-0' : 'bg-[#032733] border-b border-white/10'}`}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-20 sm:h-24 flex items-center justify-between">
+    <header className={`w-full transition-colors z-40 ${transparent ? 'absolute top-0 left-0 right-0' : 'bg-[#032733] border-b border-white/10'}`}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-16 sm:h-20 lg:h-24 flex items-center justify-between">
         
         {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-full bg-[#f0644b] flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105">
-            <Waves className="w-5 h-5 text-white" />
+        <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#f0644b] flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105">
+            <Waves className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
           </div>
           <div className="flex flex-col">
-            <span className="text-white font-extrabold text-xl tracking-tight leading-tight">
+            <span className="text-white font-extrabold text-lg sm:text-xl tracking-tight leading-tight">
               {t('brandName')}
             </span>
-            <span className="text-[#ddf4f1] text-[9px] font-bold tracking-widest uppercase">
+            <span className="text-[#ddf4f1] text-[8px] sm:text-[9px] font-bold tracking-widest uppercase">
               {t('brandTagline')}
             </span>
           </div>
