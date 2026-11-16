@@ -5,13 +5,13 @@ import { getStorage } from 'firebase/storage';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || ""
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyBun3M3jUwXQ3pdxV4qUr-CE0npgE7t0WU",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "go-hurghada-baa3c.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "go-hurghada-baa3c",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "go-hurghada-baa3c.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "493483852754",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:493483852754:web:dc5b53b07ce2153733be0b",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "G-LNKE0BFLCF"
 };
 
 export const isFirebaseConfigured = Boolean(
