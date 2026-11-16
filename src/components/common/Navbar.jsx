@@ -1,6 +1,5 @@
-import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Waves, Globe, Heart, User, LogOut, Sparkles, Menu, X } from 'lucide-react';
+import { Waves, Globe, Heart, User, LogOut, Sparkles } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useAuth } from '../../context/AuthContext';
 import { useTripPlan } from '../../context/TripPlanContext';
@@ -9,7 +8,6 @@ export default function Navbar({ transparent = false }) {
   const { lang, toggleLang, t } = useLanguage();
   const { user, logout } = useAuth();
   const { favoritesCount } = useTripPlan();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   const navLinks = [
@@ -112,67 +110,19 @@ export default function Navbar({ transparent = false }) {
           )}
         </div>
 
-        {/* Mobile menu button */}
+        {/* Mobile Action: Language Toggle */}
         <div className="flex lg:hidden items-center gap-2">
           <button
+            type="button"
             onClick={toggleLang}
-            className="p-2 text-white bg-white/10 rounded-full text-xs font-bold"
+            className="flex items-center gap-1 px-3 py-1.5 rounded-full text-white text-xs font-bold bg-white/10 hover:bg-white/20 active:scale-95 transition-all border border-white/15 cursor-pointer shadow-xs"
+            title="Toggle Language"
           >
-            {lang.toUpperCase()}
-          </button>
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl text-white hover:bg-white/10 transition-colors"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            <Globe className="w-3.5 h-3.5 text-cyan-300" />
+            <span>{lang.toUpperCase()}</span>
           </button>
         </div>
       </div>
-
-      {/* Mobile Drawer */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden bg-[#032733] border-b border-white/10 px-6 py-6 space-y-4">
-          <nav className="flex flex-col space-y-3">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-white/90 hover:text-white py-2 text-base font-semibold flex items-center justify-between"
-              >
-                <span>{link.label}</span>
-                {link.highlight && <Sparkles className="w-4 h-4 text-cyan-300" />}
-              </Link>
-            ))}
-          </nav>
-          <div className="pt-4 border-t border-white/10 flex items-center justify-between">
-            <Link
-              to="/saved"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 text-white text-sm"
-            >
-              <Heart className="w-4 h-4 text-[#f0644b]" />
-              <span>{t('navSaved')} ({favoritesCount})</span>
-            </Link>
-            {user ? (
-              <button
-                onClick={() => { logout(); setMobileMenuOpen(false); }}
-                className="text-xs text-rose-300 font-bold"
-              >
-                {t('signOut')}
-              </button>
-            ) : (
-              <Link
-                to="/auth"
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2 bg-white text-[#032733] rounded-full text-xs font-bold"
-              >
-                {t('signIn')}
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
     </header>
   );
 }

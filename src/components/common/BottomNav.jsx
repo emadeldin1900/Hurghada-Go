@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import { Compass, Sparkles, Heart, User, Home } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
@@ -8,6 +9,32 @@ export default function BottomNav() {
   const { lang } = useLanguage();
   const { favoritesCount } = useTripPlan();
   const { user } = useAuth();
+
+  // Scroll detection to hide on scroll down, show on scroll up
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      // Always show near the top of the page
+      if (currentScrollY < 60) {
+        setVisible(true);
+      } else if (currentScrollY > lastScrollY.current + 10) {
+        // Scrolling down -> hide
+        setVisible(false);
+      } else if (currentScrollY < lastScrollY.current - 10) {
+        // Scrolling up -> show
+        setVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
     {
@@ -24,13 +51,13 @@ export default function BottomNav() {
     {
       to: '/ai-planner',
       icon: Sparkles,
-      label: lang === 'ar' ? 'المساعد الذكي' : 'AI Planner',
+      label: lang === 'ar' ? 'المساعد' : 'Planner',
       highlight: true,
     },
     {
       to: '/saved',
       icon: Heart,
-      label: lang === 'ar' ? 'المحفوظات' : 'Saved',
+      label: lang === 'ar' ? 'المفضلة' : 'Saved',
       badge: favoritesCount > 0 ? favoritesCount : null,
     },
     {
@@ -43,12 +70,19 @@ export default function BottomNav() {
   ];
 
   return (
-    <nav 
-      aria-label="Mobile Navigation"
-      className="lg:hidden fixed bottom-0 inset-x-0 z-50 bg-white/95 backdrop-blur-xl border-t border-slate-200/90 shadow-[0_-8px_24px_rgba(3,39,51,0.08)] px-2 pt-1.5 pb-safe transition-transform duration-200"
-      style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 6px)' }}
+    <div
+      aria-label="Mobile Navigation Dock"
+      className={`lg:hidden fixed bottom-4 inset-x-3 sm:inset-x-8 z-50 max-w-md mx-auto transition-all duration-300 ease-out select-none ${
+        visible 
+          ? 'translate-y-0 opacity-100 scale-100' 
+          : 'translate-y-24 opacity-0 scale-95 pointer-events-none'
+      }`}
     >
-      <div className="flex items-center justify-around max-w-md mx-auto">
+      <nav className="relative bg-[#032733]/92 backdrop-blur-2xl border border-white/20 shadow-[0_16px_40px_rgba(0,0,0,0.45)] rounded-full px-2 py-1.5 flex items-center justify-around ring-1 ring-white/10">
+        
+        {/* Subtle animated background glow behind AI button */}
+        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent pointer-events-none" />
+
         {navItems.map((item) => {
           const Icon = item.icon;
           return (
@@ -57,60 +91,74 @@ export default function BottomNav() {
               to={item.to}
               end={item.exact}
               className={({ isActive }) =>
-                `relative flex flex-col items-center justify-center py-1 px-3 rounded-2xl transition-all duration-200 select-none ${
+                `relative flex flex-col items-center justify-center py-1.5 px-3 rounded-full transition-all duration-200 active:scale-85 ${
                   isActive
                     ? item.highlight
-                      ? 'text-[#f0644b]'
-                      : 'text-[#07384a]'
-                    : 'text-slate-400 hover:text-slate-600'
+                      ? 'text-white'
+                      : 'text-cyan-300'
+                    : 'text-white/60 hover:text-white/90'
                 }`
               }
             >
               {({ isActive }) => (
                 <>
-                  <div
-                    className={`relative p-1.5 rounded-xl transition-all duration-200 ${
-                      isActive
-                        ? item.highlight
-                          ? 'bg-[#f0644b]/10 scale-105'
-                          : 'bg-[#ddf4f1]/80 scale-105'
-                        : ''
-                    }`}
-                  >
-                    <Icon
-                      className={`w-5 h-5 transition-transform duration-200 ${
-                        isActive ? 'stroke-[2.5]' : 'stroke-[1.8]'
-                      } ${item.highlight && isActive ? 'text-[#f0644b]' : ''}`}
+                  {/* Active highlight pill background */}
+                  {isActive && (
+                    <span 
+                      className={`absolute inset-0 rounded-full transition-all duration-300 ${
+                        item.highlight
+                          ? 'bg-gradient-to-r from-[#f0644b] to-[#ff7a63] shadow-[0_4px_16px_rgba(240,100,75,0.5)]'
+                          : 'bg-white/15 shadow-inner'
+                      }`} 
                     />
+                  )}
 
-                    {/* Notification badge for favorites */}
-                    {item.badge && (
-                      <span className="absolute -top-1 -end-1 min-w-4 h-4 px-1 rounded-full bg-[#f0644b] text-white text-[9px] font-extrabold flex items-center justify-center shadow-xs">
-                        {item.badge}
-                      </span>
-                    )}
+                  {/* Icon container */}
+                  <div className="relative z-10 flex flex-col items-center">
+                    <div className="relative">
+                      <Icon
+                        className={`w-5 h-5 transition-transform duration-200 ${
+                          isActive 
+                            ? 'scale-110 stroke-[2.5]' 
+                            : 'stroke-[1.8] hover:scale-105'
+                        }`}
+                      />
 
-                    {/* AI Sparkle glow indicator */}
-                    {item.highlight && (
-                      <span className="absolute -top-0.5 -end-0.5 w-2 h-2 rounded-full bg-[#f0644b] animate-pulse" />
-                    )}
+                      {/* Favorites Notification Badge */}
+                      {item.badge && (
+                        <span className="absolute -top-1 -end-2 min-w-4 h-4 px-1 rounded-full bg-[#f0644b] text-white text-[9px] font-extrabold flex items-center justify-center shadow-xs animate-pulse">
+                          {item.badge}
+                        </span>
+                      )}
+
+                      {/* AI Sparkle pulse */}
+                      {item.highlight && !isActive && (
+                        <span className="absolute -top-0.5 -end-0.5 w-2 h-2 rounded-full bg-[#f0644b] animate-ping" />
+                      )}
+                    </div>
+
+                    {/* Compact Label */}
+                    <span
+                      className={`text-[10px] tracking-tight mt-0.5 transition-all duration-200 ${
+                        isActive
+                          ? 'font-bold text-white scale-105'
+                          : 'font-medium text-white/70'
+                      }`}
+                    >
+                      {item.label}
+                    </span>
                   </div>
 
-                  <span
-                    className={`text-[10px] tracking-tight mt-0.5 transition-all ${
-                      isActive
-                        ? 'font-extrabold text-[#032733]'
-                        : 'font-medium text-slate-500'
-                    }`}
-                  >
-                    {item.label}
-                  </span>
+                  {/* Active Dot indicator */}
+                  {isActive && !item.highlight && (
+                    <span className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-cyan-300 shadow-[0_0_6px_rgba(103,232,249,0.8)]" />
+                  )}
                 </>
               )}
             </NavLink>
           );
         })}
-      </div>
-    </nav>
+      </nav>
+    </div>
   );
 }
