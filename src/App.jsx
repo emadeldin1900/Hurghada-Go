@@ -1,27 +1,49 @@
-import { useState, useEffect } from 'react';
-import HeroSection from './components/HeroSection';
-import LoginForm from './components/LoginForm';
+import { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { LanguageProvider } from './context/LanguageContext';
+import { AuthProvider } from './context/AuthContext';
+import { TripPlanProvider } from './context/TripPlanContext';
+import { seedFirestoreIfEmpty } from './services/firebase/seedFirestore';
+
+import MainLayout from './layouts/MainLayout';
+import HomePage from './pages/HomePage';
+import ExplorePage from './pages/ExplorePage';
+import PlaceDetailsPage from './pages/PlaceDetailsPage';
+import AiPlannerPage from './pages/AiPlannerPage';
+import SavedPlacesPage from './pages/SavedPlacesPage';
+import ProfilePage from './pages/ProfilePage';
+import AuthPage from './pages/AuthPage';
 
 export default function App() {
-  const [lang, setLang] = useState('en');
-
   useEffect(() => {
-    document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-    document.documentElement.lang = lang;
-  }, [lang]);
+    seedFirestoreIfEmpty();
+  }, []);
 
   return (
-    <div 
-      className="min-h-screen w-full flex flex-col lg:flex-row bg-[#FAF8F5] antialiased"
-      dir={lang === 'ar' ? 'rtl' : 'ltr'}
-    >
-      <div className="w-full lg:w-1/2 h-auto lg:h-screen lg:sticky lg:top-0">
-        <HeroSection lang={lang} />
-      </div>
+    <LanguageProvider>
+      <AuthProvider>
+        <TripPlanProvider>
+          <BrowserRouter>
+            <Routes>
+              {/* Main Site with Header & Footer */}
+              <Route path="/" element={<MainLayout />}>
+                <Route index element={<HomePage />} />
+                <Route path="explore" element={<ExplorePage />} />
+                <Route path="place/:id" element={<PlaceDetailsPage />} />
+                <Route path="ai-planner" element={<AiPlannerPage />} />
+                <Route path="saved" element={<SavedPlacesPage />} />
+                <Route path="profile" element={<ProfilePage />} />
+              </Route>
 
-      <div className="w-full lg:w-1/2 min-h-screen flex flex-col">
-        <LoginForm lang={lang} onLangChange={setLang} />
-      </div>
-    </div>
+              {/* Dedicated Authentication Flow */}
+              <Route path="/auth" element={<AuthPage />} />
+
+              {/* Catch-all redirect */}
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </TripPlanProvider>
+      </AuthProvider>
+    </LanguageProvider>
   );
 }
