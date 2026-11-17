@@ -9,7 +9,8 @@ import {
   Car, 
   MapPin, 
   CalendarDays, 
-  Users 
+  Users,
+  Building2 
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import heroBg from '../../assets/hero-bg.jpg';
@@ -27,9 +28,10 @@ export default function DestinationHero() {
     { id: 'all', label: t('searchTabAll'), icon: Search },
     { id: 'hotels', label: t('searchTabHotels'), icon: BedDouble },
     { id: 'restaurants', label: t('searchTabRestaurants'), icon: Utensils },
-    { id: 'activities', label: t('searchTabActivities'), icon: Waves },
+    { id: 'chalets', label: lang === 'ar' ? 'شاليهات' : 'Chalets', icon: Building2 },
     { id: 'beaches', label: t('searchTabBeaches'), icon: Umbrella },
-    { id: 'safari', label: t('searchTabRentals'), icon: Car },
+    { id: 'activities', label: t('searchTabActivities'), icon: Waves },
+    { id: 'safari', label: lang === 'ar' ? 'سفاري' : 'Safari', icon: Car },
   ];
 
   const handleSearch = (e) => {

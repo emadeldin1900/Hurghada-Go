@@ -1,249 +1,368 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { 
   Sparkles, 
-  Compass, 
   MapPin, 
-  Clock, 
-  Calendar, 
-  Check, 
-  Bookmark, 
-  RefreshCw 
+  RefreshCw, 
+  Send, 
+  ArrowRight,
+  Wallet,
+  Star,
+  CheckCircle2,
+  Trash2,
+  User,
+  ShieldCheck,
+  PhoneCall
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
-import { useTripPlan } from '../context/TripPlanContext';
-import { haraAI, HARA_PRESETS } from '../services/ai/haraAI';
+import { chatAdvisorService } from '../services/ai/chatAdvisorService.js';
 
 export default function AiPlannerPage() {
-  const { lang, t } = useLanguage();
-  const { activePlan, setActivePlan } = useTripPlan();
+  const { lang, t, isRtl } = useLanguage();
 
-  const [prompt, setPrompt] = useState('');
-  const [duration, setDuration] = useState(3);
-  const [style, setStyle] = useState('balanced');
-  const [loading, setLoading] = useState(false);
-  const [savedSuccess, setSavedSuccess] = useState(false);
+  const initialChatMessage = {
+    id: 'welcome',
+    sender: 'bot',
+    text: lang === 'ar'
+      ? 'يا هلا بيك في الغردقة! أنا "هيرا" (Hara) مستشارك وصديقك السياحي الذكي 🌊\n\nأخبرني:\n• كم ميزانيتك؟ (مثلاً: 1500 ج، 10,000 ج، أو 50 دولار)\n• من معك وكم عدد الأيام؟ (أصحاب، عائلة مع أطفال، أو شهر عسل مع عروستك)\n• ما الذي تبحث عنه؟ (إقامة، مطعم سمك ع البحر، شاطئ رملي، رحلة غوص في الجفتون، أو سفاري بيتش باجي)\n\nوسأقوم بحساب كل تفصيلة في الميزانية وتصميم خطتك الكاملة مع ترشيح الأماكن الحقيقية بالصور والأسعار وروابط الحجز من دليلي الحصري فقط!'
+      : 'Welcome to Hurghada! I am "Hara", your intelligent local travel concierge 🌊\n\nTell me:\n• Your budget (e.g. 1500 EGP, 10,000 EGP, or $50)\n• Who is with you & how many days? (friends, family with kids, or honeymoon)\n• What are you looking for? (stay, seafood on the beach, sandy beach, diving trip to Giftun, or desert quad safari)\n\nI will calculate the exact financial math and design your vacation with real places, prices, and instant booking links!',
+    places: [],
+    timestamp: new Date()
+  };
 
-  const styles = [
-    { id: 'balanced', labelEn: 'Balanced & Relaxed', labelAr: 'متوازن ومريح' },
-    { id: 'family', labelEn: 'Family with Kids', labelAr: 'عائلي مع أطفال' },
-    { id: 'diving', labelEn: 'Diving & Reefs Focus', labelAr: 'تركيز غوص وبحري' },
-    { id: 'romantic', labelEn: 'Couples & Romance', labelAr: 'رومانسي وشهر عسل' },
-    { id: 'adventure', labelEn: 'Desert & Thrill', labelAr: 'سفاري ومغامرة' },
-  ];
+  const [chatMessages, setChatMessages] = useState([initialChatMessage]);
+  const [chatInput, setChatInput] = useState('');
+  const [chatLoading, setChatLoading] = useState(false);
+  const chatContainerRef = useRef(null);
 
-  const handleGenerate = async (e) => {
-    if (e) e.preventDefault();
-    setLoading(true);
-    setSavedSuccess(false);
-
-    try {
-      const plan = await haraAI.generatePlan({
-        prompt: prompt || `${duration} days of ${style} trip in Hurghada`,
-        durationDays: duration,
-        style
+  const scrollToChatBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTo({
+        top: chatContainerRef.current.scrollHeight,
+        behavior: 'smooth'
       });
-      setActivePlan(plan);
-    } finally {
-      setLoading(false);
     }
   };
 
-  const handleSavePlan = () => {
-    setActivePlan(plan);
-    setSavedSuccess(true);
-    setTimeout(() => setSavedSuccess(false), 3000);
+  useEffect(() => {
+    if (chatMessages.length > 1) {
+      setTimeout(() => scrollToChatBottom(), 50);
+    }
+  }, [chatMessages.length, chatLoading]);
+
+  const quickPrompts = [
+    {
+      ar: 'معايا 1500 جنيه وعايزين ناكل سمك أنا وصاحبي على البحر في مكان شيك 🦐',
+      en: '1500 EGP budget for seafood for two by the sea in a nice spot 🦐'
+    },
+    {
+      ar: 'أنا وعروستي في شهر العسل ومعانا 12000 وعايزين نقضي 3 أيام هدوء ورومانسية 💑',
+      en: 'Honeymoon for 3 days with 12000 EGP budget for quiet romantic spots 💑'
+    },
+    {
+      ar: 'معايا أسرتي طفلين والمدام ومعانا 10000 وعايزين يومين فندق وشاطئ وألعاب مائية 👨‍👩‍👧‍👦',
+      en: 'Family with 2 kids and 10000 EGP for 2 days hotel, beach & water games 👨‍👩‍👧‍👦'
+    },
+    {
+      ar: 'أنا و3 صحابي ومعانا 5000 وعايزين يومين أكشن وبحر وسفاري بيتش باجي 🏎️',
+      en: '3 friends with 5000 EGP for 2 days action, beach & quad safari 🏎️'
+    },
+    {
+      ar: 'معايا 300 جنيه وعايز كافيه هادي اشتغل فيه باللابتوب وفيه نت سريع ☕',
+      en: '300 EGP for quiet work-friendly cafe with fast Wi-Fi ☕'
+    },
+    {
+      ar: 'معايا 2000 ج وعايز أطلع رحلة غوص وسنوركلينج في جزيرة الجفتون 🤿',
+      en: '2000 EGP for diving and snorkeling trip to Giftun Island 🤿'
+    }
+  ];
+
+  const handleChatSend = async (textToSend) => {
+    const query = (textToSend || chatInput).trim();
+    if (!query || chatLoading) return;
+
+    setChatInput('');
+
+    const userMsg = {
+      id: `user-${Date.now()}`,
+      sender: 'user',
+      text: query,
+      timestamp: new Date()
+    };
+    setChatMessages(prev => [...prev, userMsg]);
+    setChatLoading(true);
+
+    try {
+      const response = await chatAdvisorService.askAdvisor({
+        query,
+        history: chatMessages,
+        lang
+      });
+
+      const botMsg = {
+        id: `bot-${Date.now()}`,
+        sender: 'bot',
+        text: response.message,
+        places: response.places || [],
+        source: response.source,
+        budgetInfo: response.budgetInfo,
+        timestamp: new Date()
+      };
+
+      setChatMessages(prev => [...prev, botMsg]);
+    } catch (err) {
+      setChatMessages(prev => [
+        ...prev,
+        {
+          id: `bot-err-${Date.now()}`,
+          sender: 'bot',
+          text: lang === 'ar'
+            ? 'عذراً يا غالي، حدث خطأ بسيط أثناء فحص قاعدة البيانات. من فضلك أعد كتابة ميزانيتك وطلبك وسأخدمك بعيوني!'
+            : 'Sorry, a temporary issue occurred. Please retype your budget and request!',
+          places: [],
+          timestamp: new Date()
+        }
+      ]);
+    } finally {
+      setChatLoading(false);
+    }
   };
 
-  const plan = activePlan || HARA_PRESETS[0];
+  const handleClearChat = () => {
+    setChatMessages([initialChatMessage]);
+  };
 
   return (
-    <div className="w-full min-h-screen py-10 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto space-y-10">
+    <div className="w-full min-h-screen py-8 px-4 sm:px-8 lg:px-16 max-w-7xl mx-auto space-y-6">
       
       {/* Header Banner */}
-      <div className="bg-gradient-to-r from-[#032733] to-[#07384a] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-xl">
-        <div className="max-w-2xl space-y-4 relative z-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-cyan-300 text-xs font-extrabold border border-cyan-400/30">
-            <Sparkles className="w-4 h-4 text-cyan-300" />
-            <span>{t('aiEyebrow')}</span>
+      <div className="bg-gradient-to-r from-[#032733] via-[#053242] to-[#07384a] rounded-3xl p-6 sm:p-10 text-white relative overflow-hidden shadow-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="max-w-3xl space-y-3 relative z-10">
+          
+          <div className="flex flex-wrap items-center gap-2.5">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md text-cyan-300 text-xs font-extrabold border border-cyan-400/30">
+              <Sparkles className="w-4 h-4 text-cyan-300 animate-pulse" />
+              <span>{t('aiEyebrow')}</span>
+            </div>
+
+            {/* Online Status Pill */}
+            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-200 border border-emerald-400/40">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+              <span>{lang === 'ar' ? 'المساعد متصل وجاهز' : 'Advisor Online'}</span>
+            </div>
           </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight leading-tight">
-            {lang === 'ar' ? 'صمّم برنامج رحلتك بالذكاء الاصطناعي' : 'Design Your Custom Itinerary with Hara'}
+          <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+            {lang === 'ar' ? 'شات هيرا | مستشارك السياحي الذكي في الغردقة' : 'Hara AI Concierge | Your Smart Hurghada Guide'}
           </h1>
 
-          <p className="text-white/80 text-sm sm:text-base leading-relaxed">
+          <p className="text-white/80 text-xs sm:text-sm leading-relaxed max-w-2xl">
             {lang === 'ar'
-              ? 'أدخل رغباتك وميزانيتك، وستقوم هيرا بتوليد جدول يومي دقيق، يتضمن أوقات الانتقال الحقيقية، وأفضل المطاعم والشواطئ.'
-              : 'Tell Hara how many days you have and what you love. Get a personalized schedule with realistic travel times, insider spots, and direct reservations.'}
+              ? 'تحدث مع هيرا كصديق محلي خبير: اكتب ميزانيتك، عدد الأفراد، وما تحتاجه، وستقوم بحساب التكلفة بالكامل وتنسيق رحلتك مع ترشيح الأماكن الحقيقية بالصور والأسعار وروابط الحجز الفوري.'
+              : 'Chat with Hara as your local insider: share your budget and preferences to get a bespoke vacation plan with real places, accurate financial math, and direct reservations.'}
           </p>
         </div>
       </div>
 
-      {/* Generator Controls Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 shadow-xs border border-slate-200/80 space-y-6">
+      {/* Main Conversational AI Chat Window */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-xl overflow-hidden flex flex-col h-[720px] animate-fadeIn">
         
-        <form onSubmit={handleGenerate} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            {/* Duration Selector */}
-            <div className="space-y-2">
-              <label className="text-xs font-bold text-[#032733] flex items-center gap-1.5">
-                <Calendar className="w-4 h-4 text-[#f0644b]" />
-                <span>{lang === 'ar' ? 'مدة الإقامة (أيام)' : 'Trip Duration (Days)'}</span>
-              </label>
-              <div className="flex items-center gap-2">
-                {[2, 3, 4, 5, 7].map((num) => (
-                  <button
-                    key={num}
-                    type="button"
-                    onClick={() => setDuration(num)}
-                    className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      duration === num 
-                        ? 'bg-[#032733] text-white shadow-2xs' 
-                        : 'bg-[#f5efe5] text-[#07384a] hover:bg-slate-200'
-                    }`}
-                  >
-                    {num} {lang === 'ar' ? 'أيام' : 'd'}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Travel Style Selector */}
-            <div className="space-y-2 md:col-span-2">
-              <label className="text-xs font-bold text-[#032733] flex items-center gap-1.5">
-                <Compass className="w-4 h-4 text-[#f0644b]" />
-                <span>{lang === 'ar' ? 'نمط الرحلة وأجواء السفر' : 'Travel Style & Vibe'}</span>
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {styles.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => setStyle(s.id)}
-                    className={`px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                      style === s.id
-                        ? 'bg-[#f0644b] text-white shadow-2xs'
-                        : 'bg-[#f5efe5] text-[#07384a] hover:bg-slate-200'
-                    }`}
-                  >
-                    {lang === 'ar' ? s.labelAr : s.labelEn}
-                  </button>
-                ))}
-              </div>
-            </div>
-
+        {/* Top Bar */}
+        <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-600">
+            <ShieldCheck className="w-4 h-4 text-emerald-600" />
+            <span>{lang === 'ar' ? 'الترشيحات تقتصر حصرياً على الأماكن المعتمدة الـ 75 في التطبيق' : 'Recommendations strictly from verified 75 places in app'}</span>
           </div>
 
-          {/* Custom Prompt Input */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-[#032733]">
-              {lang === 'ar' ? 'أي تفضيلات أو ملاحظات إضافية؟ (اختياري)' : 'Any special requests or must-dos? (Optional)'}
-            </label>
-            <div className="relative flex items-center">
-              <input
-                type="text"
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder={lang === 'ar' ? 'مثال: نفضل الأماكن الهادئة، ونحب المأكولات البحرية، ومحتاجين قارب خاص...' : 'e.g. We love quiet beaches, fresh seafood, and want a private speedboat...'}
-                className="w-full bg-[#FAF8F5] text-[#032733] text-sm p-3.5 pe-36 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-[#f0644b]/30 font-medium"
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="absolute end-2 px-6 py-2.5 bg-[#f0644b] hover:bg-[#d94a35] text-white text-xs font-extrabold rounded-xl shadow-xs transition-all cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
-              >
-                {loading ? (
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                ) : (
-                  <Sparkles className="w-4 h-4" />
-                )}
-                <span>{loading ? (lang === 'ar' ? 'جاري التوليد...' : 'Planning...') : (lang === 'ar' ? 'توليد الخطة' : 'Generate Plan')}</span>
-              </button>
-            </div>
-          </div>
-        </form>
-
-      </div>
-
-      {/* Generated Itinerary Display */}
-      <div className="space-y-6">
-        
-        {/* Title & Actions Bar */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200">
-          <div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-[#032733]">
-              {lang === 'ar' ? plan.titleAr : plan.titleEn}
-            </h2>
-            <p className="text-[#5d737a] text-sm">
-              {lang === 'ar' ? plan.subtitleAr : plan.subtitleEn}
-            </p>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleSavePlan}
-              className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
-                savedSuccess ? 'bg-emerald-600 text-white' : 'bg-[#032733] hover:bg-[#07384a] text-white'
-              }`}
-            >
-              {savedSuccess ? <Check className="w-4 h-4" /> : <Bookmark className="w-4 h-4" />}
-              <span>{savedSuccess ? (lang === 'ar' ? 'تم الحفظ!' : 'Plan Saved!') : (lang === 'ar' ? 'حفظ الخطة' : 'Save Itinerary')}</span>
-            </button>
-          </div>
+          <button
+            onClick={handleClearChat}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-slate-500 hover:text-red-500 hover:bg-red-50 text-xs font-semibold transition-colors cursor-pointer"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>{lang === 'ar' ? 'بدء محادثة جديدة' : 'New chat'}</span>
+          </button>
         </div>
 
-        {/* Days List */}
-        <div className="space-y-6">
-          {plan.days?.map((day) => (
+        {/* Messages Stream */}
+        <div ref={chatContainerRef} className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5 bg-[#FAF8F5]/60">
+          {chatMessages.map((msg) => (
             <div
-              key={day.day}
-              className="bg-white rounded-3xl p-6 sm:p-8 shadow-xs border border-slate-200/80 space-y-6"
+              key={msg.id}
+              className={`flex gap-3.5 ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
             >
-              {/* Day Header */}
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-[#f0644b] text-white flex flex-col items-center justify-center font-extrabold shadow-sm shrink-0">
-                  <span className="text-[10px] tracking-wider uppercase">{lang === 'ar' ? 'يوم' : 'Day'}</span>
-                  <span className="text-xl font-black">{day.day}</span>
+              {msg.sender === 'bot' && (
+                <div className="w-10 h-10 rounded-2xl bg-[#032733] text-amber-300 flex items-center justify-center shrink-0 shadow-md mt-1">
+                  <Sparkles className="w-5 h-5" />
                 </div>
-                <div>
-                  <h3 className="text-lg sm:text-xl font-extrabold text-[#032733]">
-                    {lang === 'ar' ? day.titleAr : day.titleEn}
-                  </h3>
-                  <span className="text-xs text-[#5d737a]">
-                    {day.stops?.length} {lang === 'ar' ? 'محطات مقترحة' : 'curated stops'}
-                  </span>
-                </div>
-              </div>
+              )}
 
-              {/* Stops Timeline */}
-              <div className="space-y-4 pt-2">
-                {day.stops?.map((stop, sIndex) => (
-                  <div
-                    key={sIndex}
-                    className="flex items-start gap-4 p-4 rounded-2xl bg-[#FAF8F5] border border-slate-100 hover:bg-[#ddf4f1]/30 transition-colors"
-                  >
-                    <div className="flex items-center gap-1.5 text-xs font-extrabold text-[#f0644b] w-24 shrink-0 pt-0.5">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>{stop.time}</span>
+              <div className="max-w-[92%] sm:max-w-[82%] space-y-3">
+                {/* Message Bubble */}
+                <div
+                  className={`p-4 sm:p-5 rounded-3xl text-sm leading-relaxed whitespace-pre-line shadow-sm ${
+                    msg.sender === 'user'
+                      ? 'bg-[#032733] text-white rounded-br-none'
+                      : 'bg-white text-slate-800 border border-slate-200/90 rounded-bl-none'
+                  }`}
+                >
+                  {msg.text}
+                </div>
+
+                {/* Recommendation Place Cards */}
+                {msg.places && msg.places.length > 0 && (
+                  <div className="space-y-3 pt-2">
+                    <div className="text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                      <span>{lang === 'ar' ? 'الأماكن المرشحة لك من التطبيق:' : 'Verified places matched for you:'}</span>
                     </div>
 
-                    <div className="flex-1 space-y-1">
-                      <h4 className="text-sm font-bold text-[#032733] flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-[#29b8b2]" />
-                        <span>{stop.place}</span>
-                      </h4>
-                      <p className="text-xs text-[#5d737a] leading-relaxed">
-                        {lang === 'ar' ? stop.noteAr : stop.noteEn}
-                      </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {msg.places.map((place) => (
+                        <div
+                          key={place.id}
+                          className="bg-white rounded-2xl p-4 border border-slate-200 hover:border-[#f0644b] shadow-sm hover:shadow-lg transition-all flex flex-col justify-between gap-3 group"
+                        >
+                          <div className="flex items-start gap-3.5">
+                            <img
+                              src={place.image || place.images?.[0]}
+                              alt={place.name}
+                              className="w-20 h-20 rounded-2xl object-cover shrink-0 shadow-sm group-hover:scale-105 transition-transform"
+                              loading="lazy"
+                            />
+
+                            <div className="space-y-1 min-w-0 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-md bg-[#ddf4f1] text-[#07384a]">
+                                  {place.category}
+                                </span>
+                                <div className="flex items-center gap-1 text-xs font-bold text-amber-500">
+                                  <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                                  <span>{place.rating}</span>
+                                </div>
+                              </div>
+
+                              <h4 className="font-extrabold text-sm text-[#032733] truncate">
+                                {lang === 'ar' ? (place.nameAr || place.name) : place.name}
+                              </h4>
+
+                              <div className="flex items-center gap-1.5 text-xs text-slate-500 truncate">
+                                <MapPin className="w-3.5 h-3.5 text-[#29b8b2] shrink-0" />
+                                <span className="truncate">{lang === 'ar' ? place.areaAr : place.area}</span>
+                              </div>
+
+                              <div className="text-xs font-black text-[#f0644b]">
+                                {lang === 'ar' ? place.priceAr : place.priceEn}
+                              </div>
+                            </div>
+                          </div>
+
+                          {place.recommendationReason && (
+                            <p className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
+                              💡 {place.recommendationReason}
+                            </p>
+                          )}
+
+                          <div className="flex items-center gap-2 pt-1 border-t border-slate-100">
+                            {place.phone && (
+                              <a
+                                href={`tel:${place.phone}`}
+                                className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 shrink-0"
+                              >
+                                <PhoneCall className="w-3.5 h-3.5 text-emerald-600" />
+                                <span>{lang === 'ar' ? 'اتصال' : 'Call'}</span>
+                              </a>
+                            )}
+
+                            <Link
+                              to={`/place/${place.id}`}
+                              className="flex-1 inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-[#032733] hover:bg-[#f0644b] text-white text-xs font-extrabold transition-all shadow-sm"
+                            >
+                              <span>{lang === 'ar' ? 'عرض التفاصيل والحجز' : 'View & Book'}</span>
+                              <ArrowRight className={`w-3.5 h-3.5 ${isRtl ? 'rotate-180' : ''}`} />
+                            </Link>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                ))}
+                )}
+
+                <div className="text-[10px] text-slate-400 px-1">
+                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </div>
               </div>
 
+              {msg.sender === 'user' && (
+                <div className="w-10 h-10 rounded-2xl bg-slate-200 text-slate-700 flex items-center justify-center shrink-0 shadow-sm mt-1">
+                  <User className="w-5 h-5" />
+                </div>
+              )}
             </div>
           ))}
+
+          {chatLoading && (
+            <div className="flex gap-3 items-center text-slate-600 text-xs py-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#032733] text-amber-300 flex items-center justify-center shrink-0 animate-pulse">
+                <Sparkles className="w-5 h-5" />
+              </div>
+              <div className="flex items-center gap-2 bg-white px-5 py-3 rounded-2xl border border-slate-200 shadow-sm">
+                <RefreshCw className="w-4 h-4 animate-spin text-[#f0644b]" />
+                <span className="font-semibold">
+                  {lang === 'ar' ? 'هيرا تحسب ميزانيتك وتجهز لك أفضل خطة...' : 'Hara is calculating your budget and matching places...'}
+                </span>
+              </div>
+            </div>
+          )}
         </div>
+
+        {/* Quick Suggestions Chips */}
+        <div className="p-3 bg-slate-50 border-t border-slate-200 overflow-x-auto no-scrollbar flex items-center gap-2 shrink-0">
+          <span className="text-xs font-black text-slate-500 uppercase tracking-wider shrink-0 ps-1 flex items-center gap-1.5">
+            <Wallet className="w-3.5 h-3.5 text-[#f0644b]" />
+            <span>{lang === 'ar' ? 'أفكار سريعة:' : 'Quick ideas:'}</span>
+          </span>
+          {quickPrompts.map((qp, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleChatSend(lang === 'ar' ? qp.ar : qp.en)}
+              className="whitespace-nowrap px-3 py-1.5 rounded-xl bg-white hover:bg-[#032733] hover:text-white text-slate-700 text-xs font-semibold border border-slate-200 transition-all shrink-0 cursor-pointer shadow-2xs"
+            >
+              {lang === 'ar' ? qp.ar : qp.en}
+            </button>
+          ))}
+        </div>
+
+        {/* Input Bar */}
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleChatSend();
+          }}
+          className="p-4 bg-white border-t border-slate-200 flex items-center gap-3 shrink-0"
+        >
+          <input
+            type="text"
+            value={chatInput}
+            onChange={(e) => setChatInput(e.target.value)}
+            placeholder={
+              lang === 'ar'
+                ? 'اكتب ميزانيتك وطلبك (مثال: أنا وصاحبي ومعانا 1500 ج وعايزين ناكل سمك ع البحر)...'
+                : 'Enter your budget & details (e.g. 1500 EGP for seafood with a friend)...'
+            }
+            className="flex-1 bg-slate-100 hover:bg-slate-100/80 focus:bg-white text-[#032733] text-sm px-5 py-3 rounded-2xl border border-transparent focus:border-[#f0644b]/50 focus:outline-none focus:ring-2 focus:ring-[#f0644b]/20 transition-all font-medium"
+          />
+          <button
+            type="submit"
+            disabled={!chatInput.trim() || chatLoading}
+            className="px-6 py-3 rounded-2xl bg-[#032733] hover:bg-[#f0644b] text-white text-sm font-black transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer flex items-center gap-2 shadow-md shrink-0"
+          >
+            <span>{lang === 'ar' ? 'إرسال' : 'Send'}</span>
+            <Send className={`w-4 h-4 ${isRtl ? 'rotate-180' : ''}`} />
+          </button>
+        </form>
 
       </div>
 

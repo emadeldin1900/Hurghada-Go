@@ -38,13 +38,19 @@ export default function PlanAndPartner() {
             </p>
           </div>
 
-          <div className="relative z-10">
+          <div className="relative z-10 flex flex-wrap items-center gap-3">
             <a
-              href="mailto:partners@gohurghada.com"
+              href="mailto:partners@hurghadago.com"
               className="inline-flex items-center gap-2 px-5 sm:px-6 py-3 sm:py-3.5 rounded-full bg-[#f0644b] hover:bg-[#d94a35] text-white font-bold text-xs sm:text-sm shadow-md transition-all cursor-pointer"
             >
               <span>{t('partnerBtn')}</span>
               <ArrowRight className="w-4 h-4" />
+            </a>
+            <a
+              href="mailto:support@hurghadago.com"
+              className="inline-flex items-center gap-2 px-4 py-3 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/20 transition-all"
+            >
+              <span>{lang === 'ar' ? 'فريق الدعم: support@hurghadago.com' : 'Support Desk'}</span>
             </a>
           </div>
         </div>

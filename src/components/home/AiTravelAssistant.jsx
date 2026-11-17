@@ -6,7 +6,7 @@ import {
   Map as MapIcon, 
   ChevronRight, 
   Send, 
-  ArrowUpRight 
+  ArrowUpRight
 } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTripPlan } from '../../context/TripPlanContext';
@@ -24,7 +24,7 @@ export default function AiTravelAssistant() {
     setSelectedPresetId(preset.id);
     setLoading(true);
     try {
-      const plan = await haraAI.generatePlan({ presetId: preset.id });
+      const plan = await haraAI.generatePlan({ presetId: preset.id, lang });
       setActivePlan(plan);
     } finally {
       setLoading(false);
@@ -37,7 +37,7 @@ export default function AiTravelAssistant() {
 
     setLoading(true);
     try {
-      const plan = await haraAI.generatePlan({ prompt: inputPrompt });
+      const plan = await haraAI.generatePlan({ prompt: inputPrompt.trim(), lang });
       setActivePlan(plan);
       setSelectedPresetId('custom');
       setInputPrompt('');
@@ -55,14 +55,21 @@ export default function AiTravelAssistant() {
         {/* Left Column: Assistant Copy & Prompt Chips */}
         <div className="w-full lg:w-5/12 space-y-4 sm:space-y-6">
           
-          {/* Assistant Label */}
-          <div className="flex items-center gap-2.5 sm:gap-3">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#f0644b] flex items-center justify-center text-white shadow-sm">
-              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+          {/* Assistant Label & Gemini Badge */}
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div className="flex items-center gap-2.5 sm:gap-3">
+              <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-[#f0644b] flex items-center justify-center text-white shadow-sm">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+              </div>
+              <span className="text-[#d94a35] font-extrabold text-[11px] sm:text-sm tracking-wider uppercase">
+                {t('aiEyebrow')}
+              </span>
             </div>
-            <span className="text-[#d94a35] font-extrabold text-[11px] sm:text-sm tracking-wider uppercase">
-              {t('aiEyebrow')}
-            </span>
+
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/70 text-slate-700 text-[11px] font-bold border border-slate-200/80 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>{lang === 'ar' ? 'جاهز للمساعدة' : 'Ready'}</span>
+            </div>
           </div>
 
           {/* Headline */}
@@ -131,16 +138,23 @@ export default function AiTravelAssistant() {
                 </div>
               </div>
 
-              <span className="bg-[#ddf4f1] text-[#07384a] text-xs font-bold px-3 py-1.5 rounded-full">
-                {t('aiBadge')}
-              </span>
+              <div className="flex items-center gap-2">
+                {currentPlan.source === 'gemini' && (
+                  <span className="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2.5 py-1 rounded-full border border-emerald-300">
+                    ✨ {lang === 'ar' ? 'مخصص لك' : 'Personalized'}
+                  </span>
+                )}
+                <span className="bg-[#ddf4f1] text-[#07384a] text-xs font-bold px-3 py-1.5 rounded-full">
+                  {t('aiBadge')}
+                </span>
+              </div>
             </div>
 
             {/* Assistant message balloon */}
             <div className="bg-[#f5efe5] p-4 rounded-2xl rounded-tl-sm text-[#032733] text-sm leading-relaxed">
               {lang === 'ar'
-                ? 'لقد وازنت بين أوقات البحر والشعاب المرجانية، والمذاق المحلي وسحر الصحراء. إليك هذا البرنامج المريح المخصص لك:'
-                : "I’ve balanced reef time, local flavor and a little desert magic. Here’s a relaxed custom plan for you:"}
+                ? 'لقد قمت ببرمجة خطة متوازنة تجمع بين أجمل مواقع الشعاب، والمأكولات البحرية، وسحر الصحراء:'
+                : "I’ve balanced reef time, local flavor, and desert highlights. Here’s your custom plan:"}
             </div>
 
             {/* Itinerary Preview Container */}
@@ -179,7 +193,7 @@ export default function AiTravelAssistant() {
                         {lang === 'ar' ? day.titleAr : day.titleEn}
                       </h4>
                       <p className="text-[#5d737a] text-xs mt-0.5 line-clamp-1">
-                        {day.stops?.map(s => s.place).join(' · ')}
+                        {day.stops?.map(s => (lang === 'ar' && s.placeAr ? s.placeAr : s.place)).join(' · ')}
                       </p>
                     </div>
 
@@ -209,14 +223,15 @@ export default function AiTravelAssistant() {
               </button>
             </form>
 
-            {/* Link to Full AI Planner */}
-            <div className="pt-1 flex items-center justify-between text-xs font-bold text-[#07384a]">
-              <span>{lang === 'ar' ? 'هل تريد تخصيص الميزانية والفندق بالكامل؟' : 'Want to customize budget & hotel choices?'}</span>
+            {/* Link to Full AI Chat */}
+            <div className="pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-bold text-[#07384a]">
+              <span>{lang === 'ar' ? 'هل تريد تخطيطاً شاملاً وحساب ميزانيتك بالكامل؟' : 'Looking for complete custom budget planning?'}</span>
               <Link
-                to="/ai-planner"
-                className="flex items-center gap-1 text-[#f0644b] hover:underline"
+                to="/chat"
+                className="inline-flex items-center gap-1.5 text-white bg-[#032733] hover:bg-[#f0644b] px-4 py-2 rounded-xl shadow-xs transition-colors"
               >
-                <span>{lang === 'ar' ? 'فتح المساعد الشامل' : 'Open Full Planner'}</span>
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                <span>{lang === 'ar' ? 'افتح شات هيرا الذكي' : 'Open Hara AI Chat'}</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </Link>
             </div>

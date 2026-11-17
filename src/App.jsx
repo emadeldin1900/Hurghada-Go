@@ -10,6 +10,7 @@ import HomePage from './pages/HomePage';
 import ExplorePage from './pages/ExplorePage';
 import PlaceDetailsPage from './pages/PlaceDetailsPage';
 import AiPlannerPage from './pages/AiPlannerPage';
+import AiChatPage from './pages/AiChatPage';
 import SavedPlacesPage from './pages/SavedPlacesPage';
 import ProfilePage from './pages/ProfilePage';
 import AuthPage from './pages/AuthPage';
@@ -31,6 +32,8 @@ export default function App() {
                 <Route path="explore" element={<ExplorePage />} />
                 <Route path="place/:id" element={<PlaceDetailsPage />} />
                 <Route path="ai-planner" element={<AiPlannerPage />} />
+                <Route path="chat" element={<AiPlannerPage />} />
+                <Route path="ai-chat" element={<AiPlannerPage />} />
                 <Route path="saved" element={<SavedPlacesPage />} />
                 <Route path="profile" element={<ProfilePage />} />
               </Route>

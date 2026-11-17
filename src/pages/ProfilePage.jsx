@@ -5,12 +5,17 @@ import {
   Calendar, 
   Heart, 
   CheckCircle2, 
-  LogOut 
+  LogOut,
+  LifeBuoy,
+  PhoneCall,
+  HelpCircle,
+  ExternalLink
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { useAuth } from '../context/AuthContext';
 import { useTripPlan } from '../context/TripPlanContext';
 import { bookingsService } from '../services/firebase/placesService';
+import SupportModal from '../components/common/SupportModal';
 
 export default function ProfilePage() {
   const { lang, t } = useLanguage();
@@ -18,6 +23,8 @@ export default function ProfilePage() {
   const { favoritesCount } = useTripPlan();
 
   const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadBookings() {
@@ -50,7 +57,7 @@ export default function ProfilePage() {
             </h1>
             <p className="text-[#5d737a] text-sm flex items-center justify-center sm:justify-start gap-1.5">
               <Mail className="w-4 h-4 text-[#29b8b2]" />
-              <span>{user?.email || user?.phoneNumber || 'traveler@gohurghada.com'}</span>
+              <span>{user?.email || user?.phoneNumber || 'traveler@hurghadago.com'}</span>
             </p>
             <span className="inline-block mt-2 px-3 py-1 bg-emerald-50 text-emerald-800 text-xs font-bold rounded-full">
               {lang === 'ar' ? 'حساب نشط ومؤكد' : 'Verified Member'}
@@ -59,6 +66,14 @@ export default function ProfilePage() {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setSupportModalOpen(true)}
+            className="px-4 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 border border-cyan-200 cursor-pointer"
+          >
+            <LifeBuoy className="w-4 h-4 text-cyan-600" />
+            <span>{lang === 'ar' ? 'الدعم والمساعدة' : 'Support Desk'}</span>
+          </button>
           <Link
             to="/saved"
             className="px-4 py-2 bg-[#FAF8F5] hover:bg-[#ddf4f1] text-[#07384a] rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 border border-slate-200"
@@ -146,7 +161,73 @@ export default function ProfilePage() {
             ))}
           </div>
         )}
+
+        {/* Dedicated Support Assistance Card for Profile */}
+        <div className="bg-[#FAF8F5] rounded-3xl p-6 sm:p-8 border border-slate-200/80 space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 text-[#032733]">
+                <LifeBuoy className="w-5 h-5 text-[#29b8b2]" />
+                <h3 className="font-extrabold text-base sm:text-lg">
+                  {lang === 'ar' ? 'هل تحتاج لمساعدة في حجز أو تعديل موعد رحلة؟' : 'Need help modifying or cancelling a booking?'}
+                </h3>
+              </div>
+              <p className="text-xs sm:text-sm text-[#5d737a]">
+                {lang === 'ar' 
+                  ? 'فريق كونسيرج جو غردقة متواجد لمساعدتك في أي تعديل أو استرداد دون أي تعقيد.' 
+                  : 'Our booking specialists are on standby to handle reschedules, special requests, and cancellations.'}
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setSupportModalOpen(true)}
+              className="px-5 py-2.5 rounded-full bg-[#032733] hover:bg-[#f0644b] text-white text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shrink-0"
+            >
+              <span>{lang === 'ar' ? 'تواصل مع الدعم' : 'Contact Support'}</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
+            <div className="p-3 bg-white rounded-2xl border border-slate-200/70 flex items-center gap-2.5">
+              <Mail className="w-4 h-4 text-[#29b8b2]" />
+              <div className="overflow-hidden">
+                <span className="text-slate-400 text-[10px] block">{lang === 'ar' ? 'إيميل الحجوزات' : 'Bookings Desk'}</span>
+                <a href="mailto:bookings@hurghadago.com" className="font-bold text-[#07384a] hover:underline truncate block">
+                  bookings@hurghadago.com
+                </a>
+              </div>
+            </div>
+
+            <div className="p-3 bg-white rounded-2xl border border-slate-200/70 flex items-center gap-2.5">
+              <Mail className="w-4 h-4 text-[#29b8b2]" />
+              <div className="overflow-hidden">
+                <span className="text-slate-400 text-[10px] block">{lang === 'ar' ? 'الدعم العام' : 'Customer Support'}</span>
+                <a href="mailto:support@hurghadago.com" className="font-bold text-[#07384a] hover:underline truncate block">
+                  support@hurghadago.com
+                </a>
+              </div>
+            </div>
+
+            <div className="p-3 bg-white rounded-2xl border border-slate-200/70 flex items-center gap-2.5">
+              <PhoneCall className="w-4 h-4 text-rose-500" />
+              <div className="overflow-hidden">
+                <span className="text-slate-400 text-[10px] block">{lang === 'ar' ? 'طوارئ السائحين' : '24/7 Helpline'}</span>
+                <a href="tel:126" className="font-bold text-rose-700 hover:underline block">
+                  126 (Tourist Police)
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Support Desk Modal */}
+      <SupportModal 
+        isOpen={supportModalOpen} 
+        onClose={() => setSupportModalOpen(false)} 
+      />
 
     </div>
   );

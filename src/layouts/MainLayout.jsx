@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import Navbar from '../components/common/Navbar';
 import Footer from '../components/common/Footer';
 import BottomNav from '../components/common/BottomNav';
+import FloatingAiChat from '../components/chat/FloatingAiChat';
 
 export default function MainLayout() {
   const { pathname } = useLocation();
@@ -11,12 +12,15 @@ export default function MainLayout() {
     window.scrollTo(0, 0);
   }, [pathname]);
 
+  const isDedicatedChatPage = pathname === '/chat' || pathname === '/ai-chat' || pathname === '/ai-planner';
+
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-slate-800 antialiased selection:bg-[#f0644b] selection:text-white">
       <Navbar transparent={pathname === '/'} />
       <main className="flex-1 pb-24 lg:pb-0">
         <Outlet />
       </main>
+      {!isDedicatedChatPage && <FloatingAiChat />}
       <Footer />
       <BottomNav />
     </div>

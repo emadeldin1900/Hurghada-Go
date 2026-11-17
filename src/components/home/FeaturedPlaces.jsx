@@ -8,7 +8,7 @@ export default function FeaturedPlaces() {
   const { lang, t } = useLanguage();
   const { isFavorite, toggleFavorite } = useTripPlan();
 
-  const featured = PLACES_DATA.slice(0, 3);
+  const featured = PLACES_DATA.filter(p => p.featured).slice(0, 6);
 
   return (
     <section className="bg-[#f5efe5] py-10 sm:py-16 lg:py-20 px-3.5 sm:px-8 lg:px-16">

@@ -7,15 +7,15 @@ export async function seedFirestoreIfEmpty() {
 
   try {
     const snap = await getDocs(collection(db, 'places'));
-    if (snap.empty) {
-      console.log('Seeding initial places to Firestore...');
+    if (snap.empty || snap.size < 10) {
+      console.log('Seeding updated places dataset to Firestore...');
       for (const place of PLACES_DATA) {
         await setDoc(doc(db, 'places', place.id), place);
       }
       for (const cat of CATEGORIES_DATA) {
         await setDoc(doc(db, 'categories', cat.id), cat);
       }
-      console.log('Initial data seeded successfully to Firestore!');
+      console.log('Full dataset seeded successfully to Firestore!');
     }
   } catch (err) {
     console.warn('Auto-seed check notice (check your Firestore rules if permissions needed):', err.message);

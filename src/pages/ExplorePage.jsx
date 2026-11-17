@@ -29,15 +29,27 @@ export default function ExplorePage() {
 
   const filteredPlaces = useMemo(() => {
     return PLACES_DATA.filter((place) => {
-      const matchCat = activeCategory === 'all' || place.category.toLowerCase() === activeCategory.toLowerCase();
+      const matchCat = activeCategory === 'all' || 
+        place.category.toLowerCase() === activeCategory.toLowerCase() ||
+        (activeCategory === 'hotels' && place.category === 'chalets') ||
+        (activeCategory === 'activities' && ['diving', 'safari', 'islands'].includes(place.category.toLowerCase())) ||
+        (activeCategory === 'restaurants' && place.category.toLowerCase() === 'nightlife');
+
       const matchQuery = !localQuery || 
         place.name.toLowerCase().includes(localQuery.toLowerCase()) ||
         place.nameAr.includes(localQuery) ||
         place.description.toLowerCase().includes(localQuery.toLowerCase()) ||
-        place.descriptionAr.includes(localQuery);
+        place.descriptionAr.includes(localQuery) ||
+        (place.area && place.area.toLowerCase().includes(localQuery.toLowerCase())) ||
+        (place.areaAr && place.areaAr.includes(localQuery)) ||
+        (place.subCategory && place.subCategory.toLowerCase().includes(localQuery.toLowerCase())) ||
+        (place.tags && place.tags.some(t => t.toLowerCase().includes(localQuery.toLowerCase())));
+
       const matchDest = !searchDestination ||
         place.location.toLowerCase().includes(searchDestination.toLowerCase()) ||
-        place.locationAr.includes(searchDestination);
+        place.locationAr.includes(searchDestination) ||
+        (place.area && place.area.toLowerCase().includes(searchDestination.toLowerCase())) ||
+        (place.areaAr && place.areaAr.includes(searchDestination));
 
       return matchCat && matchQuery && matchDest;
     });

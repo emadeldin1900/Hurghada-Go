@@ -25,7 +25,15 @@ export const placesService = {
   async getPlacesByCategory(categorySlug) {
     const list = await placesService.getAllPlaces();
     if (!categorySlug || categorySlug === 'all') return list;
-    return list.filter(p => p.category.toLowerCase() === categorySlug.toLowerCase());
+    const target = categorySlug.toLowerCase();
+    return list.filter(p => {
+      const c = p.category?.toLowerCase();
+      if (c === target) return true;
+      if (target === 'hotels' && c === 'chalets') return true;
+      if (target === 'activities' && ['diving', 'safari', 'islands'].includes(c)) return true;
+      if (target === 'restaurants' && c === 'nightlife') return true;
+      return false;
+    });
   },
 
   async searchPlaces({ query: qText = '', category = 'all', destination = '', minRating = 0 }) {
@@ -36,14 +44,22 @@ export const placesService = {
         place.nameAr.includes(qText) ||
         place.description.toLowerCase().includes(qText.toLowerCase()) ||
         place.descriptionAr.includes(qText) ||
+        (place.area && place.area.toLowerCase().includes(qText.toLowerCase())) ||
+        (place.areaAr && place.areaAr.includes(qText)) ||
+        (place.subCategory && place.subCategory.toLowerCase().includes(qText.toLowerCase())) ||
         place.tags?.some(t => t.toLowerCase().includes(qText.toLowerCase()));
 
-      const matchCat = category === 'all' || 
-        place.category.toLowerCase() === category.toLowerCase();
+      const targetCat = category.toLowerCase();
+      const matchCat = targetCat === 'all' || 
+        place.category?.toLowerCase() === targetCat ||
+        (targetCat === 'hotels' && place.category === 'chalets') ||
+        (targetCat === 'activities' && ['diving', 'safari', 'islands'].includes(place.category?.toLowerCase()));
 
       const matchDest = !destination || 
         place.location.toLowerCase().includes(destination.toLowerCase()) ||
-        place.locationAr.includes(destination);
+        place.locationAr.includes(destination) ||
+        (place.area && place.area.toLowerCase().includes(destination.toLowerCase())) ||
+        (place.areaAr && place.areaAr.includes(destination));
 
       const matchRating = place.rating >= minRating;
 

@@ -1,10 +1,13 @@
-import { Waves, Mail, MapPin, ArrowUp, PhoneCall } from 'lucide-react';
+import { useState } from 'react';
+import { Waves, Mail, MapPin, ArrowUp, PhoneCall, CalendarCheck, LifeBuoy, Store, HelpCircle } from 'lucide-react';
 import { InstagramIcon, FacebookIcon, YoutubeIcon } from '../SocialIcons';
 import { useLanguage } from '../../context/LanguageContext';
 import { Link } from 'react-router-dom';
+import SupportModal from './SupportModal';
 
 export default function Footer() {
   const { lang, setLang, t } = useLanguage();
+  const [supportModalOpen, setSupportModalOpen] = useState(false);
 
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -37,16 +40,41 @@ export default function Footer() {
               {t('footerBrandDesc')}
             </p>
 
+            {/* Official Support Emails */}
             <div className="space-y-2.5 text-xs text-white/90">
               <div className="flex items-center gap-2.5">
-                <Mail className="w-4 h-4 text-[#29b8b2]" />
-                <a href="mailto:hello@gohurghada.com" className="hover:underline">
-                  hello@gohurghada.com
-                </a>
+                <LifeBuoy className="w-4 h-4 text-[#29b8b2] shrink-0" />
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-white/60">{lang === 'ar' ? 'الدعم العام:' : 'Support:'}</span>
+                  <a href="mailto:support@hurghadago.com" className="hover:text-cyan-300 font-medium underline underline-offset-2">
+                    support@hurghadago.com
+                  </a>
+                </div>
               </div>
+
               <div className="flex items-center gap-2.5">
-                <MapPin className="w-4 h-4 text-[#29b8b2]" />
-                <span>Hurghada, Red Sea Governorate, Egypt</span>
+                <CalendarCheck className="w-4 h-4 text-[#29b8b2] shrink-0" />
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-white/60">{lang === 'ar' ? 'الحجوزات:' : 'Bookings:'}</span>
+                  <a href="mailto:bookings@hurghadago.com" className="hover:text-cyan-300 font-medium underline underline-offset-2">
+                    bookings@hurghadago.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5">
+                <Store className="w-4 h-4 text-[#29b8b2] shrink-0" />
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-white/60">{lang === 'ar' ? 'الشراكات:' : 'Partners:'}</span>
+                  <a href="mailto:partners@hurghadago.com" className="hover:text-cyan-300 font-medium underline underline-offset-2">
+                    partners@hurghadago.com
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2.5 pt-1 text-white/70">
+                <MapPin className="w-4 h-4 text-[#29b8b2] shrink-0" />
+                <span>{lang === 'ar' ? 'الغردقة، ساحل البحر الأحمر، مصر' : 'Hurghada, Red Sea Governorate, Egypt'}</span>
               </div>
             </div>
 
@@ -67,28 +95,30 @@ export default function Footer() {
           {/* Explore Links (Col 5-6) */}
           <div className="lg:col-span-2 space-y-4">
             <h4 className="text-[#29b8b2] text-xs font-extrabold uppercase tracking-wider">
-              {lang === 'ar' ? 'استكشف' : 'Explore'}
+              {lang === 'ar' ? 'استكشف الفئات' : 'Categories'}
             </h4>
             <ul className="space-y-2.5 text-sm text-white/80">
-              <li><Link to="/explore?cat=diving" className="hover:text-white transition-colors">{lang === 'ar' ? 'الغوص والسنوركلينج' : 'Dive & snorkel'}</Link></li>
-              <li><Link to="/explore?cat=islands" className="hover:text-white transition-colors">{lang === 'ar' ? 'الشواطئ والجزر' : 'Beaches & islands'}</Link></li>
-              <li><Link to="/explore?cat=hotels" className="hover:text-white transition-colors">{lang === 'ar' ? 'فنادق ومنتجعات' : 'Hotels & resorts'}</Link></li>
-              <li><Link to="/explore?cat=restaurants" className="hover:text-white transition-colors">{lang === 'ar' ? 'مطاعم ومأكولات' : 'Restaurants & dining'}</Link></li>
-              <li><Link to="/explore?cat=safari" className="hover:text-white transition-colors">{lang === 'ar' ? 'سفاري الصحراء' : 'Desert safaris'}</Link></li>
+              <li><Link to="/explore?cat=hotels" className="hover:text-white transition-colors">{lang === 'ar' ? 'فنادق ومنتجعات فاخرة' : 'Hotels & Resorts'}</Link></li>
+              <li><Link to="/explore?cat=restaurants" className="hover:text-white transition-colors">{lang === 'ar' ? 'مطاعم وكافيهات' : 'Restaurants & Cafes'}</Link></li>
+              <li><Link to="/explore?cat=chalets" className="hover:text-white transition-colors">{lang === 'ar' ? 'شاليهات وإقامات' : 'Chalets & Stays'}</Link></li>
+              <li><Link to="/explore?cat=beaches" className="hover:text-white transition-colors">{lang === 'ar' ? 'شواطئ ونوادي شاطئية' : 'Beaches & Clubs'}</Link></li>
+              <li><Link to="/explore?cat=diving" className="hover:text-white transition-colors">{lang === 'ar' ? 'غوص وسنوركلينج' : 'Dive & Snorkel'}</Link></li>
+              <li><Link to="/explore?cat=safari" className="hover:text-white transition-colors">{lang === 'ar' ? 'سفاري الصحراء' : 'Desert Safaris'}</Link></li>
             </ul>
           </div>
 
           {/* Destinations (Col 7-8) */}
           <div className="lg:col-span-3 space-y-4">
             <h4 className="text-[#29b8b2] text-xs font-extrabold uppercase tracking-wider">
-              {lang === 'ar' ? 'أبرز الوجهات' : 'Top Destinations'}
+              {lang === 'ar' ? 'أبرز مناطق الغردقة' : 'Top Areas'}
             </h4>
             <ul className="space-y-2.5 text-sm text-white/80">
-              <li><Link to="/explore?dest=El+Gouna" className="hover:text-white transition-colors">{lang === 'ar' ? 'الجونة (البندقية المصرية)' : 'El Gouna'}</Link></li>
+              <li><Link to="/explore?dest=El+Gouna" className="hover:text-white transition-colors">{lang === 'ar' ? 'الجونة وبحيرات أبو تيج' : 'El Gouna'}</Link></li>
               <li><Link to="/explore?dest=Sahl+Hasheesh" className="hover:text-white transition-colors">{lang === 'ar' ? 'سهل حشيش والكورنيش' : 'Sahl Hasheesh'}</Link></li>
               <li><Link to="/explore?dest=Makadi+Bay" className="hover:text-white transition-colors">{lang === 'ar' ? 'خليج مكادي' : 'Makadi Bay'}</Link></li>
-              <li><Link to="/explore?dest=Giftun+Islands" className="hover:text-white transition-colors">{lang === 'ar' ? 'جزر الجفتون وأورانج باي' : 'Giftun Islands'}</Link></li>
-              <li><Link to="/explore?dest=Marina" className="hover:text-white transition-colors">{lang === 'ar' ? 'المارينا الجديدة' : 'Hurghada Marina'}</Link></li>
+              <li><Link to="/explore?dest=Somabay" className="hover:text-white transition-colors">{lang === 'ar' ? 'شبه جزيرة سوما باي' : 'Soma Bay'}</Link></li>
+              <li><Link to="/explore?dest=Marina" className="hover:text-white transition-colors">{lang === 'ar' ? 'مارينا الغردقة الجديدة' : 'Hurghada Marina'}</Link></li>
+              <li><Link to="/explore?dest=El+Kawthar" className="hover:text-white transition-colors">{lang === 'ar' ? 'حي الكوثر والممشى' : 'El Kawthar & Mamsha'}</Link></li>
             </ul>
           </div>
 
@@ -97,14 +127,40 @@ export default function Footer() {
             <div className="flex items-center gap-2 text-rose-300">
               <PhoneCall className="w-4 h-4" />
               <h4 className="text-xs font-extrabold uppercase tracking-wider">
-                {lang === 'ar' ? 'مساعدة الطوارئ والسياحة' : 'Traveler Support'}
+                {lang === 'ar' ? 'طوارئ ودعم السائحين' : '24/7 Traveler Help'}
               </h4>
             </div>
+
             <p className="text-xs text-white/70 leading-relaxed">
               {lang === 'ar' 
-                ? 'شرطة السياحة: 126 | الإسعاف: 123. مستشفى الغردقة العام ومراكز الضغط العالي متوفرة 24/7.' 
-                : 'Tourist Police: 126 | Ambulance: 123. Hyperbaric dive decompression chambers on 24/7 standby.'}
+                ? 'شرطة السياحة: 126 | الإسعاف: 123. مستشفى الغردقة العام وغرف الضغط العالي للغواصين متاحة 24/7.' 
+                : 'Tourist Police: 126 | Ambulance: 123. Dive decompression chambers & emergency response 24/7.'}
             </p>
+
+            {/* Direct Emergency Email Link */}
+            <div className="pt-1">
+              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs">
+                <span className="text-rose-300 block text-[11px] font-bold">
+                  {lang === 'ar' ? 'بريد الطوارئ المباشر:' : 'Direct Emergency Email:'}
+                </span>
+                <a 
+                  href="mailto:emergency@hurghadago.com" 
+                  className="text-white hover:text-rose-200 font-mono font-bold hover:underline"
+                >
+                  emergency@hurghadago.com
+                </a>
+              </div>
+            </div>
+
+            {/* Open Support Desk Button */}
+            <button
+              type="button"
+              onClick={() => setSupportModalOpen(true)}
+              className="w-full py-2.5 px-3 rounded-xl bg-[#29b8b2]/20 hover:bg-[#29b8b2]/30 text-[#ddf4f1] border border-[#29b8b2]/40 text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <HelpCircle className="w-4 h-4 text-[#29b8b2]" />
+              <span>{lang === 'ar' ? 'فتح مركز المساعدة والدعم' : 'Open Support Desk'}</span>
+            </button>
 
             {/* Language Pill Switcher */}
             <div className="pt-2 flex items-center gap-2">
@@ -135,9 +191,14 @@ export default function Footer() {
           <p>{t('footerCopyright')}</p>
 
           <div className="flex items-center gap-6">
+            <button 
+              onClick={() => setSupportModalOpen(true)} 
+              className="hover:underline cursor-pointer text-white/80"
+            >
+              {lang === 'ar' ? 'تواصل معنا' : 'Contact Us'}
+            </button>
             <a href="#privacy" className="hover:underline">{lang === 'ar' ? 'سياسة الخصوصية' : 'Privacy Policy'}</a>
             <a href="#terms" className="hover:underline">{lang === 'ar' ? 'شروط الاستخدام' : 'Terms of Service'}</a>
-            <a href="#cookies" className="hover:underline">{lang === 'ar' ? 'ملفات تعريف الارتباط' : 'Cookies'}</a>
           </div>
 
           <button
@@ -150,6 +211,12 @@ export default function Footer() {
         </div>
 
       </div>
+
+      {/* Support Modal */}
+      <SupportModal 
+        isOpen={supportModalOpen} 
+        onClose={() => setSupportModalOpen(false)} 
+      />
     </footer>
   );
 }

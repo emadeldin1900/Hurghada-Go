@@ -32,8 +32,8 @@ export default function PopularCategories() {
           </div>
         </div>
 
-        {/* 6 Category Cards: Swipeable on mobile, Grid on desktop */}
-        <div className="flex sm:grid sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4 overflow-x-auto sm:overflow-visible pb-3 sm:pb-0 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0">
+        {/* Category Cards: Swipeable on mobile, Grid on desktop */}
+        <div className="flex sm:grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4 overflow-x-auto sm:overflow-visible pb-3 sm:pb-0 scrollbar-none snap-x -mx-4 px-4 sm:mx-0 sm:px-0">
           {CATEGORIES_DATA.map((cat) => (
             <Link
               key={cat.id}
