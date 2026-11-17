@@ -15,9 +15,9 @@ export default function MainLayout() {
   const isDedicatedChatPage = pathname === '/chat' || pathname === '/ai-chat' || pathname === '/ai-planner';
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAF8F5] text-slate-800 antialiased selection:bg-[#f0644b] selection:text-white">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden flex flex-col bg-[#FAF8F5] text-slate-800 antialiased selection:bg-[#f0644b] selection:text-white">
       <Navbar transparent={pathname === '/'} />
-      <main className="flex-1 pb-24 lg:pb-0">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden pb-24 lg:pb-0">
         <Outlet />
       </main>
       {!isDedicatedChatPage && <FloatingAiChat />}

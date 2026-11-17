@@ -7,7 +7,7 @@ export default function PopularCategories() {
   const { lang, t } = useLanguage();
 
   return (
-    <section className="bg-white py-10 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-16 border-b border-slate-100">
+    <section className="bg-white py-10 sm:py-16 lg:py-20 px-4 sm:px-8 lg:px-16 border-b border-slate-100 overflow-hidden w-full max-w-full">
       <div className="max-w-7xl mx-auto space-y-6 sm:space-y-10">
         
         {/* Section Intro Header */}

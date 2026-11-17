@@ -149,7 +149,7 @@ export default function FloatingAiChat() {
   return (
     <>
       {/* Floating Trigger Button */}
-      <div className={`fixed bottom-20 lg:bottom-6 ${isRtl ? 'left-4 sm:left-6' : 'right-4 sm:right-6'} z-50`}>
+      <div className={`fixed bottom-20 lg:bottom-6 ${isRtl ? 'left-3 sm:left-6' : 'right-3 sm:right-6'} z-50`}>
         {!isOpen && (
           <button
             onClick={() => setIsOpen(true)}
@@ -182,7 +182,7 @@ export default function FloatingAiChat() {
           className={`fixed z-50 transition-all duration-300 ${
             isExpanded
               ? 'inset-2 sm:inset-6 md:inset-10'
-              : `bottom-4 ${isRtl ? 'left-4 sm:left-6' : 'right-4 sm:right-6'} w-[calc(100vw-2rem)] sm:w-[460px] h-[650px] max-h-[88vh]`
+              : `bottom-4 inset-x-3 sm:inset-x-auto ${isRtl ? 'sm:left-6' : 'sm:right-6'} sm:w-[460px] h-[650px] max-h-[88vh]`
           } bg-white rounded-3xl shadow-2xl border border-slate-200/90 flex flex-col overflow-hidden animate-in fade-in zoom-in-95`}
           dir={isRtl ? 'rtl' : 'ltr'}
         >

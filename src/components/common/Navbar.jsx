@@ -28,7 +28,7 @@ export default function Navbar({ transparent = false }) {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 h-16 sm:h-20 lg:h-24 flex items-center justify-between">
           
           {/* Brand Logo */}
-          <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group">
+          <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group shrink-0">
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#f0644b] flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105">
               <Waves className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
             </div>
@@ -64,7 +64,7 @@ export default function Navbar({ transparent = false }) {
           </nav>
 
           {/* Action Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
             {/* Support Desk Trigger */}
             <button
               type="button"

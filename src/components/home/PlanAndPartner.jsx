@@ -16,7 +16,7 @@ export default function PlanAndPartner() {
   };
 
   return (
-    <section className="bg-white py-10 sm:py-16 lg:py-20 px-3.5 sm:px-8 lg:px-16">
+    <section className="bg-white py-10 sm:py-16 lg:py-20 px-3.5 sm:px-8 lg:px-16 overflow-hidden w-full max-w-full">
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-8 items-stretch">
         
         {/* Business Owner Promo (Col 1-7) */}
